@@ -1,14 +1,21 @@
 #![allow(non_snake_case)]
 
+use rust_decimal::Decimal;
+
+/// Represents an acid or base in a solution
+/// `is_acidic` is true if the species is an acid, false if it is a base
+/// `conc` is the concentration of the species in the solution
+/// `dissoc_consts` is a vector of dissociation constants for the species (Ka for acids, Kb for bases)
 pub struct AcidBase 
 {
-    pub is_acid: bool,
+    pub is_acidic: bool,
     pub conc: f64,
     pub dissoc_consts: Vec<f64>
 }
 
 impl AcidBase 
 {
+    // Recommended way of instantiating new species
     pub fn new(is_acid: bool, conc: f64, mut pK_values: Vec<f64>) -> Self 
     {
         if conc < 0.0 
@@ -21,7 +28,7 @@ impl AcidBase
 
         AcidBase 
         { 
-            is_acid, 
+            is_acidic: is_acid, 
             conc, 
             dissoc_consts: pK_values
                 .iter()

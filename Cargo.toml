@@ -1,5 +1,5 @@
 [package]
-name = "ph_calc"
+name = "pH_calc"
 version = "0.1.0"
 authors = ["nxhduong"]
 edition = "2021"
@@ -9,3 +9,4 @@ license = "MIT"
 keywords = ["ph"]
 
 [dependencies]
+rust_decimal = "1.36.0"
