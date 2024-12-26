@@ -2,7 +2,7 @@
 
 use crate::types::AcidBase;
 
-/// Compute the pH of a `sol`ution, with solvent autodissociation constant `Ki` (= Kw = 14 for water)
+/// Compute the pH of a `sol`ution, with solvent self-ionization constant `Ki` (= Kw = 14 for water)
 pub fn compute_pH(sol: Vec<AcidBase>, Ki: f64) -> f64 
 {
     let mut most_accur_pH: (f64, f64) = (0.0, std::f64::INFINITY);
@@ -30,9 +30,11 @@ pub fn compute_pH(sol: Vec<AcidBase>, Ki: f64) -> f64
                 *                 denom = [H+]^3 + [H+]^2 * Ka1 + [H+] * Ka1 * Ka2 + Ka1 * Ka2 * Ka3
                 */
 
-                for i in 1..=species.dissoc_consts.len()
+                for i in 0..=species.dissoc_consts.len() 
                 {
-                    numer += i as f64 * 10_f64.powf(-pH).powf(species.dissoc_consts.len() as f64 - i as f64) * 
+                    if i > 0
+                    {
+                        numer += i as f64 * 10_f64.powf(-pH * (species.dissoc_consts.len() as f64 - i as f64)) * 
                         match species.dissoc_consts[0..i]
                             .iter()
                             .copied()
@@ -41,11 +43,9 @@ pub fn compute_pH(sol: Vec<AcidBase>, Ki: f64) -> f64
                             Some(product) => product,
                             None => 1.0
                         };
-                }
+                    }
 
-                for i in 0..=species.dissoc_consts.len() 
-                {
-                    denom += 10_f64.powf(-pH).powf(species.dissoc_consts.len() as f64 - i as f64) * 
+                    denom += 10_f64.powf(-pH * (species.dissoc_consts.len() as f64 - i as f64)) * 
                         match species.dissoc_consts[0..i]
                             .iter()
                             .copied()
@@ -67,9 +67,11 @@ pub fn compute_pH(sol: Vec<AcidBase>, Ki: f64) -> f64
                                  denom = [H+]^2 + [H+]Ka1 + Ka1 * Ka2
                 */
 
-                for i in 1..=species.dissoc_consts.len()
+                for i in 0..=species.dissoc_consts.len() 
                 {
-                    numer += i as f64 * 10_f64.powf(-pH * i as f64) * 
+                    if i > 0
+                    {
+                        numer += i as f64 * 10_f64.powf(-pH * i as f64) * 
                         match species.dissoc_consts[0..(species.dissoc_consts.len() - i)]
                             .iter()
                             .copied()
@@ -78,11 +80,9 @@ pub fn compute_pH(sol: Vec<AcidBase>, Ki: f64) -> f64
                             Some(product) => product,
                             None => 1.0
                         };
-                }
+                    }
 
-                for i in 0..=species.dissoc_consts.len() 
-                {
-                    denom += 10_f64.powf(-pH).powf(species.dissoc_consts.len() as f64 - i as f64) * 
+                    denom += 10_f64.powf(-pH * (species.dissoc_consts.len() as f64 - i as f64)) * 
                         match species.dissoc_consts[0..i]
                             .iter()
                             .copied()
@@ -104,7 +104,7 @@ pub fn compute_pH(sol: Vec<AcidBase>, Ki: f64) -> f64
             most_accur_pH.1 = 10_f64.powf(-pH) - rhs;
         }
 
-        pH += 0.001;
+        pH += 0.0001;
     }
 
     most_accur_pH.0

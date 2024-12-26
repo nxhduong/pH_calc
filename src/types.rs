@@ -1,7 +1,5 @@
 #![allow(non_snake_case)]
 
-use rust_decimal::Decimal;
-
 /// Represents an acid or base in a solution
 /// `is_acidic` is true if the species is an acid, false if it is a base
 /// `conc` is the concentration of the species in the solution
