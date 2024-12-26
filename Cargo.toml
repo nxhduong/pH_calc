@@ -9,4 +9,4 @@ license = "MIT"
 keywords = ["ph"]
 
 [dependencies]
-rust_decimal = "1.36.0"
+decimal-rs = "0.1.43"

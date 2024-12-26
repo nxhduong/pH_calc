@@ -1,6 +1,6 @@
 #![allow(non_snake_case)]
 
-use rust_decimal::Decimal;
+use decimal_rs::*;
 
 /// Represents an acid or base in a solution
 /// `is_acidic` is true if the species is an acid, false if it is a base
@@ -9,16 +9,16 @@ use rust_decimal::Decimal;
 pub struct AcidBase 
 {
     pub is_acidic: bool,
-    pub conc: f64,
-    pub dissoc_consts: Vec<f64>
+    pub conc: Decimal,
+    pub dissoc_consts: Vec<Decimal>
 }
 
 impl AcidBase 
 {
     // Recommended way of instantiating new species
-    pub fn new(is_acid: bool, conc: f64, mut pK_values: Vec<f64>) -> Self 
+    pub fn new(is_acid: bool, conc: Decimal, mut pK_values: Vec<Decimal>) -> Self 
     {
-        if conc < 0.0 
+        if conc < Decimal::ZERO
         {
             panic!("Concentration must not be negative")
         }
@@ -32,7 +32,7 @@ impl AcidBase
             conc, 
             dissoc_consts: pK_values
                 .iter()
-                .map(|pK| 10_f64.powf(-pK))
+                .map(|pK| Decimal::from(10).checked_pow(&-pK).unwrap())
                 .collect() 
         }
     }

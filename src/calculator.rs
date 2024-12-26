@@ -1,21 +1,24 @@
 #![allow(non_snake_case)] // pH, pKa, Kb etc.
 
 use crate::types::AcidBase;
+use decimal_rs::*;
 
 /// Compute the pH of a `sol`ution, with solvent autodissociation constant `Ki` (= Kw = 14 for water)
-pub fn compute_pH(sol: Vec<AcidBase>, Ki: f64) -> f64 
+pub fn compute_pH(sol: Vec<AcidBase>, Ki: Decimal) -> Decimal 
 {
-    let mut most_accur_pH: (f64, f64) = (0.0, std::f64::INFINITY);
-    let mut pH: f64 = 0.0;
+    let INF = Decimal::from(50);
+    let TEN = Decimal::from(10);
+    let mut most_accur_pH: (Decimal, Decimal) = (Decimal::ZERO, INF);
+    let mut pH = Decimal::ZERO;
     
-    while pH < 14.0 
+    while pH < Decimal::from(14)
     {
-        let mut rhs = 10_f64.powf(-Ki + pH);
+        let mut rhs = TEN.checked_pow(&(-Ki + pH)).unwrap();
 
         for species in &sol 
         {
-            let mut numer: f64 = 0.0; //times coeff
-            let mut denom: f64 = 0.0; 
+            let mut numer = Decimal::ZERO;
+            let mut denom = Decimal::ZERO; 
 
             if species.is_acidic 
             {
@@ -32,31 +35,32 @@ pub fn compute_pH(sol: Vec<AcidBase>, Ki: f64) -> f64
 
                 for i in 1..=species.dissoc_consts.len()
                 {
-                    numer += i as f64 * 10_f64.powf(-pH).powf(species.dissoc_consts.len() as f64 - i as f64) * 
+                    numer += Decimal::from(i) * 
+                        TEN.checked_pow(&(-pH * (Decimal::from(species.dissoc_consts.len()) - Decimal::from(i)))).unwrap() * 
                         match species.dissoc_consts[0..i]
                             .iter()
                             .copied()
                             .reduce(|accum, Ka| accum * Ka)
                         {
                             Some(product) => product,
-                            None => 1.0
+                            None => Decimal::ONE
                         };
                 }
 
                 for i in 0..=species.dissoc_consts.len() 
                 {
-                    denom += 10_f64.powf(-pH).powf(species.dissoc_consts.len() as f64 - i as f64) * 
+                    denom += TEN.checked_pow(&(-pH * (Decimal::from(species.dissoc_consts.len()) - Decimal::from(i)))).unwrap() * 
                         match species.dissoc_consts[0..i]
                             .iter()
                             .copied()
                             .reduce(|accum, Ka| accum * Ka)
                         {
                             Some(product) => product,
-                            None => 1.0
+                            None => Decimal::ONE
                         };
                 }
 
-                rhs += species.conc.clamp(0.0, std::f64::INFINITY) * numer / denom;
+                rhs += species.conc.clamp(Decimal::ZERO, INF) * numer / denom;
             } 
             else 
             {
@@ -69,42 +73,42 @@ pub fn compute_pH(sol: Vec<AcidBase>, Ki: f64) -> f64
 
                 for i in 1..=species.dissoc_consts.len()
                 {
-                    numer += i as f64 * 10_f64.powf(-pH * i as f64) * 
+                    numer += Decimal::from(i) * TEN.checked_pow(&(-pH * Decimal::from(i))).unwrap() * 
                         match species.dissoc_consts[0..(species.dissoc_consts.len() - i)]
                             .iter()
                             .copied()
-                            .reduce(|accum, Kb| accum * 10_f64.powf(-Ki) / Kb)
+                            .reduce(|accum, Kb| accum * TEN.checked_pow(&-Ki).unwrap() / Kb)
                         {
                             Some(product) => product,
-                            None => 1.0
+                            None => Decimal::ONE
                         };
                 }
 
                 for i in 0..=species.dissoc_consts.len() 
                 {
-                    denom += 10_f64.powf(-pH).powf(species.dissoc_consts.len() as f64 - i as f64) * 
+                    denom += TEN.checked_pow(&(-pH * (Decimal::from(species.dissoc_consts.len()) - Decimal::from(i)))).unwrap() * 
                         match species.dissoc_consts[0..i]
                             .iter()
                             .copied()
-                            .reduce(|accum, Kb| accum * 10_f64.powf(-Ki) / Kb)
+                            .reduce(|accum, Kb| accum * TEN.checked_pow(&-Ki).unwrap() / Kb)
                         {
                             Some(product) => product,
-                            None => 1.0
+                            None => Decimal::ONE
                         };
                 }
-
-                rhs -= species.conc.clamp(0.0, std::f64::INFINITY) * numer / denom;
+                
+                rhs -= species.conc.clamp(Decimal::ZERO, INF) * numer / denom;
             }
         }
 
         // Replace with more accurate pH value (smaller difference between LHS ([H+]) and RHS)
-        if (10_f64.powf(-pH) - rhs).abs() < most_accur_pH.1 
+        if (TEN.checked_pow(&-pH).unwrap() - rhs).abs() < most_accur_pH.1 
         {
             most_accur_pH.0 = pH;
-            most_accur_pH.1 = 10_f64.powf(-pH) - rhs;
+            most_accur_pH.1 = TEN.checked_pow(&-pH).unwrap() - rhs;
         }
 
-        pH += 0.001;
+        pH += "0.001".parse::<Decimal>().unwrap();
     }
 
     most_accur_pH.0
