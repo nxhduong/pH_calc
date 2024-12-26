@@ -1,6 +1,11 @@
 [package]
 name = "ph_calc"
 version = "0.1.0"
+authors = ["nxhduong"]
 edition = "2021"
+description = "A simple pH calculator"
+repository = "github.com/nxhduong/ph_calc"
+license = "MIT"
+keywords = ["ph"]
 
 [dependencies]

@@ -16,6 +16,7 @@ impl AcidBase
             panic!("Concentration must not be negative")
         }
 
+        // Sort x in 10^x (not sorting 10^x)
         pK_values.sort_by(|val1, val2| val1.partial_cmp(val2).unwrap());
 
         AcidBase 
