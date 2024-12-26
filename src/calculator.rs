@@ -1,16 +1,51 @@
-#![allow(non_snake_case)] // pH, pKa, Kb etc.
+#![allow(non_snake_case)] // pH_min, pKa, Kb etc.
+
+use std::thread;
 
 use crate::types::AcidBase;
 
-/// Compute the pH of a `sol`ution, with solvent self-ionization constant `Ki` (= Kw = 14 for water)
+/// Compute the pH_min of a `sol`ution, with solvent self-ionization constant `Ki` (= Kw = 14 for water)
 pub fn compute_pH(sol: Vec<AcidBase>, Ki: f64) -> f64 
 {
-    let mut most_accur_pH: (f64, f64) = (0.0, std::f64::INFINITY);
-    let mut pH: f64 = 0.0;
-    
-    while pH < 14.0 
+    // Multithreading for even better performance: One thread deals with pH from 0-6.999, another deals with pH from 7-14        
+    let acid_thread = thread::spawn({
+        let sol = sol.clone();
+        let Ki = Ki.clone();
+
+        move || { _compute_pH_partial(true, sol, Ki) }
+    });
+    let base_thread = thread::spawn(move || _compute_pH_partial(false, sol, Ki));
+
+    let lowest_acidic = acid_thread.join().unwrap();
+    let lowest_basic = base_thread.join().unwrap();
+
+    if lowest_acidic.1.abs() < lowest_basic.1.abs()
     {
-        let mut rhs = 10_f64.powf(-Ki + pH);
+        lowest_acidic.0
+    }
+    else 
+    {
+        lowest_basic.0
+    }
+}
+
+/// Compute pH in a specific range (acidic or basic)
+fn _compute_pH_partial(acidic_env: bool, sol: Vec<AcidBase>, Ki: f64) -> (f64, f64)
+{
+    let (mut pH_min, pH_max): (f64, f64) = if acidic_env
+    {
+        (0.0, 6.9999)
+    }
+    else 
+    {
+        (7.0, 14.0)
+    };
+
+    let mut most_accur_pH: (f64, f64) = (0.0, std::f64::INFINITY);
+    
+    while pH_min < pH_max 
+    {
+        let mut rhs = 10_f64.powf(-Ki + pH_min);
 
         for species in &sol 
         {
@@ -34,7 +69,7 @@ pub fn compute_pH(sol: Vec<AcidBase>, Ki: f64) -> f64
                 {
                     if i > 0
                     {
-                        numer += i as f64 * 10_f64.powf(-pH * (species.dissoc_consts.len() as f64 - i as f64)) * 
+                        numer += i as f64 * 10_f64.powf(-pH_min * (species.dissoc_consts.len() as f64 - i as f64)) * 
                         match species.dissoc_consts[0..i]
                             .iter()
                             .copied()
@@ -45,7 +80,7 @@ pub fn compute_pH(sol: Vec<AcidBase>, Ki: f64) -> f64
                         };
                     }
 
-                    denom += 10_f64.powf(-pH * (species.dissoc_consts.len() as f64 - i as f64)) * 
+                    denom += 10_f64.powf(-pH_min * (species.dissoc_consts.len() as f64 - i as f64)) * 
                         match species.dissoc_consts[0..i]
                             .iter()
                             .copied()
@@ -71,7 +106,7 @@ pub fn compute_pH(sol: Vec<AcidBase>, Ki: f64) -> f64
                 {
                     if i > 0
                     {
-                        numer += i as f64 * 10_f64.powf(-pH * i as f64) * 
+                        numer += i as f64 * 10_f64.powf(-pH_min * i as f64) * 
                         match species.dissoc_consts[0..(species.dissoc_consts.len() - i)]
                             .iter()
                             .copied()
@@ -82,7 +117,7 @@ pub fn compute_pH(sol: Vec<AcidBase>, Ki: f64) -> f64
                         };
                     }
 
-                    denom += 10_f64.powf(-pH * (species.dissoc_consts.len() as f64 - i as f64)) * 
+                    denom += 10_f64.powf(-pH_min * (species.dissoc_consts.len() as f64 - i as f64)) * 
                         match species.dissoc_consts[0..i]
                             .iter()
                             .copied()
@@ -97,15 +132,15 @@ pub fn compute_pH(sol: Vec<AcidBase>, Ki: f64) -> f64
             }
         }
 
-        // Replace with more accurate pH value (smaller difference between LHS ([H+]) and RHS)
-        if (10_f64.powf(-pH) - rhs).abs() < most_accur_pH.1 
+        // Replace with more accurate pH_min value (smaller difference between LHS ([H+]) and RHS)
+        if (10_f64.powf(-pH_min) - rhs).abs() < most_accur_pH.1 
         {
-            most_accur_pH.0 = pH;
-            most_accur_pH.1 = 10_f64.powf(-pH) - rhs;
+            most_accur_pH.0 = pH_min;
+            most_accur_pH.1 = 10_f64.powf(-pH_min) - rhs;
         }
 
-        pH += 0.0001;
+        pH_min += 0.0001;
     }
 
-    most_accur_pH.0
+    most_accur_pH
 }

@@ -6,6 +6,6 @@ edition = "2021"
 description = "A simple pH calculator"
 repository = "github.com/nxhduong/ph_calc"
 license = "MIT"
-keywords = ["ph"]
+keywords = ["ph", "chemistry"]
 
 [dependencies]

@@ -1,5 +1,5 @@
 # pH_calc
-A simple pH calculator library crate, written in Rust.
+A simple library crate written in Rust that can calculate the pH of a solution, given the pKa(b)s and concentrations of species in that solution.
 ## How it works
 
 ## How to use
