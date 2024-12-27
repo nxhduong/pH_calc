@@ -1,39 +1,39 @@
 # pH_calc
-A simple library crate written in Rust that can calculate the pH of a solution, given the pKa(b)s and concentrations of species in that solution.
+A simple library crate written in Rust that can calculate the pH of a solution from the pKa(b)s and concentrations of species in that solution.
 ## How it works
 (WIP)
-## How to use
+## Usage
 ```rust 
-fn compute_pH(sol: Vec<AcidBase>, pKi: f64) -> f64
+pub fn compute_pH(solution: &[AcidBase], pKi: f64) -> f64
 ```
 Where:
-- `sol`: Species in a solution
+- `solution`: Species in a solution
     - `AcidBase`: comprises the following properties:
         ```rust
-        pub is_acidic: bool, // Whether it is an acid or a base
-        pub conc: f64, // Concentration
-        pub dissoc_consts_acid: Vec<f64> // Ka of the acid/conjugate acid of the base
+        is_acid: bool, // Whether it is an acid or a base
+        conc: f64, // Concentration
+        dissoc_consts_acid: Vec<f64> // Ka of the acid/conjugate acid of the base
         ```
-        It is recommended to use the contructor
+        To instantiate new acids and bases, use the contructor:
         ```rust
-        pub fn new(is_acid: bool, conc: f64, mut pKa_values: Vec<f64>) -> Self
+        pub fn new(is_acidic: bool, conc: f64, mut pKa_values: Vec<f64>) -> Self
         ```
-        which takes equilibrium constants as pKa/pKb and does range check on concentration.
 - `pKi`: Self-ionization constant of solvent (`14` for water)
 
 Returns:
 - pH (set to 4 decimal places)
 
-Example snippet:
+Example code snippet:
 ```rust
 // Calculate pH of 0.1M phosphoric acid in water
-compute_pH(vec![
+compute_pH(&[
         AcidBase::new(
             true,
             0.1,
-            vec![2.12, 7.21, 12.67]
+            &mut [2.12, 7.21, 12.67]
         )
     ], 14.0)
+// Output: ~1.62
 ```
 For amphoteric species, treat them as separate acids and bases.
 ## TODOs

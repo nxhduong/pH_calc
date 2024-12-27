@@ -11,11 +11,11 @@ fn triprotic_acid()
 {
     let now = Instant::now();
 
-    assert_eq!((10.0 * compute_pH(vec![
+    assert_eq!((10.0 * compute_pH(&[
         AcidBase::new(
             true,
             0.1,
-            vec![2.12, 7.21, 12.67]
+            &mut [2.12, 7.21, 12.67]
         )
     ], 14.0)).round(), 16.0);
 
@@ -27,11 +27,11 @@ fn diprotic_acid()
 {
     let now = Instant::now();
 
-    assert_eq!(compute_pH(vec![
+    assert_eq!(compute_pH(&[
         AcidBase::new(
             true,
             0.1,
-            vec![-3.0, 1.99]
+            &mut [-3.0, 1.99]
         )
     ], 14.0).round(), 1.0);
 
@@ -43,11 +43,11 @@ fn monoprotic_acid()
 {
     let now = Instant::now();
 
-    assert_eq!((10.0 * compute_pH(vec![
+    assert_eq!((10.0 * compute_pH(&[
         AcidBase::new(
             true,
             0.02,
-            vec![4.76]
+            &mut [4.76]
         )
     ], 14.0)).round(), 32.0);
 
@@ -59,16 +59,16 @@ fn simple_buffer()
 {
     let now = Instant::now();
 
-    assert_eq!((10.0 * compute_pH(vec![
+    assert_eq!((10.0 * compute_pH(&[
         AcidBase::new(
             true,
             0.1,
-            vec![4.21]
+            &mut [4.21]
         ),
         AcidBase::new(
             false,
             0.1,
-            vec![4.21]
+            &mut [4.21]
         )
     ], 14.0)).round(), 42.0);
 
@@ -80,11 +80,11 @@ fn monoprotic_base()
 {
     let now = Instant::now();
 
-    assert_eq!(10.0 * compute_pH(vec![
+    assert_eq!(10.0 * compute_pH(&[
         AcidBase::new(
             false,
             0.03,
-            vec![9.24]
+            &mut [9.24]
         )
     ], 14.0).round(), 110.0);
 
@@ -96,11 +96,11 @@ fn diprotic_base()
 {
     let now = Instant::now();
 
-    assert_eq!(10.0 * compute_pH(vec![
+    assert_eq!(10.0 * compute_pH(&[
         AcidBase::new(
             false,
             0.25,
-            vec![6.35, 10.33]
+            &mut [6.35, 10.33]
         )
     ], 14.0).round(), 120.0);
 
@@ -113,31 +113,31 @@ fn mc_ilvaine_buffer()
 {
     let now = Instant::now();
 
-    assert_eq!(compute_pH(vec![
+    assert_eq!(compute_pH(&[
         AcidBase::new(
             true,
             0.1,
-            vec![3.86]
+            &mut [3.86]
         ),
         AcidBase::new(
             true,
             0.1,
-            vec![6.0]
+            &mut [6.0]
         ),
         AcidBase::new(
             true,
             0.1,
-            vec![8.2]
+            &mut [8.2]
         ),
         AcidBase::new(
             false,
             0.1,
-            vec![10.4]
+            &mut [10.4]
         ),
         AcidBase::new(
             false,
             0.1,
-            vec![12.5]
+            &mut [12.5]
         )
     ], 14.0), 6.0);
 
@@ -149,31 +149,31 @@ fn super_solution()
 {
     let now = Instant::now();
 
-    assert_eq!((compute_pH(vec![
+    assert_eq!((compute_pH(&[
         AcidBase::new(
             true,
             0.02,
-            vec![2.12, 7.21, 12.67]
+            &mut [2.12, 7.21, 12.67]
         ),
         AcidBase::new(
             true,
             0.01,
-            vec![2.0, 2.7, 6.16, 10.26]
+            &mut [2.0, 2.7, 6.16, 10.26]
         ),
         AcidBase::new(
             false,
             0.25,
-            vec![9.24, 12.4, 13.3]
+            &mut [9.24, 12.4, 13.3]
         ),
         AcidBase::new(
             true,
             0.001,
-            vec![-3.0, 1.99]
+            &mut [-3.0, 1.99]
         ),
         AcidBase::new(
             false,
             0.05,
-            vec![4.76]
+            &mut [4.76]
         )
     ], 14.0)).round(), 13.0);
 
