@@ -12,11 +12,11 @@ Where:
         ```rust
         pub is_acidic: bool, // Whether it is an acid or a base
         pub conc: f64, // Concentration
-        pub dissoc_consts: Vec<f64> // Ka for acids, Kb for bases
+        pub dissoc_consts_acid: Vec<f64> // Ka of the acid/conjugate acid of the base
         ```
         It is recommended to use the contructor
         ```rust
-        pub fn new(is_acid: bool, conc: f64, mut pK_values: Vec<f64>) -> Self
+        pub fn new(is_acid: bool, conc: f64, mut pKa_values: Vec<f64>) -> Self
         ```
         which takes equilibrium constants as pKa/pKb and does range check on concentration.
 - `pKi`: Self-ionization constant of solvent (`14` for water)

@@ -34,7 +34,7 @@ pub fn compute_pH(sol: Vec<AcidBase>, pKi: f64) -> f64
 /// Compute pH in a specific range (acidic or basic)
 fn _compute_pH_partial(acidic_env: bool, sol: Vec<AcidBase>, Ki: f64) -> (f64, f64)
 {
-    let (mut pH_min, pH_max): (f64, f64) = if acidic_env
+    let (mut pH_start, pH_end): (f64, f64) = if acidic_env
     {
         (0.0, 7.0)
     }
@@ -45,9 +45,9 @@ fn _compute_pH_partial(acidic_env: bool, sol: Vec<AcidBase>, Ki: f64) -> (f64, f
 
     let mut most_accur_pH: (f64, f64) = (0.0, std::f64::INFINITY);
     
-    while pH_min < pH_max 
+    while pH_start < pH_end 
     {
-        let mut rhs = Ki / 10_f64.powf(-pH_min);
+        let mut rhs = Ki / 10_f64.powf(-pH_start);
 
         for species in &sol 
         {
@@ -67,12 +67,12 @@ fn _compute_pH_partial(acidic_env: bool, sol: Vec<AcidBase>, Ki: f64) -> (f64, f
                 *                 denom = [H+]^3 + [H+]^2 * Ka1 + [H+] * Ka1 * Ka2 + Ka1 * Ka2 * Ka3
                 */
 
-                for i in 0..=species.dissoc_consts.len() 
+                for i in 0..=species.dissoc_consts_acid.len() 
                 {
                     if i > 0
                     {
-                        numer += i as f64 * 10_f64.powf(-pH_min * (species.dissoc_consts.len() as f64 - i as f64)) * 
-                        match species.dissoc_consts[0..i]
+                        numer += i as f64 * 10_f64.powf(-pH_start * (species.dissoc_consts_acid.len() as f64 - i as f64)) * 
+                        match species.dissoc_consts_acid[0..i]
                             .iter()
                             .copied()
                             .reduce(|accumulator, Ka| accumulator * Ka)
@@ -82,8 +82,8 @@ fn _compute_pH_partial(acidic_env: bool, sol: Vec<AcidBase>, Ki: f64) -> (f64, f
                         };
                     }
 
-                    denom += 10_f64.powf(-pH_min * (species.dissoc_consts.len() as f64 - i as f64)) * 
-                        match species.dissoc_consts[0..i]
+                    denom += 10_f64.powf(-pH_start * (species.dissoc_consts_acid.len() as f64 - i as f64)) * 
+                        match species.dissoc_consts_acid[0..i]
                             .iter()
                             .copied()
                             .reduce(|accumulator, Ka| accumulator * Ka)
@@ -97,33 +97,33 @@ fn _compute_pH_partial(acidic_env: bool, sol: Vec<AcidBase>, Ki: f64) -> (f64, f
             } 
             else 
             {
-                // Convert Ka to Kb for bases and sort
+                // Ka of conjugate acid
                 /* E.g. for a diprotic base:
                                  numer = C0 * ([H+]Ka1 + 2 * [H+]^2)
                 [H+] = Kw/[H+] - ____________________________________
                                  denom = [H+]^2 + [H+]Ka1 + Ka1 * Ka2
                 */
 
-                for i in 0..=species.dissoc_consts.len() 
+                for i in 0..=species.dissoc_consts_acid.len() 
                 {
                     if i > 0
                     {
-                        numer += i as f64 * 10_f64.powf(-pH_min * i as f64) * 
-                        match species.dissoc_consts[0..(species.dissoc_consts.len() - i)]
+                        numer += i as f64 * 10_f64.powf(-pH_start * i as f64) * 
+                        match species.dissoc_consts_acid[0..(species.dissoc_consts_acid.len() - i)]
                             .iter()
                             .copied()
-                            .reduce(|accumulator, Kb| accumulator * Ki / Kb)
+                            .reduce(|accumulator, Ka| accumulator * Ka)
                         {
                             Some(product) => product,
                             None => 1.0
                         };
                     }
 
-                    denom += 10_f64.powf(-pH_min * (species.dissoc_consts.len() as f64 - i as f64)) * 
-                        match species.dissoc_consts[0..i]
+                    denom += 10_f64.powf(-pH_start * (species.dissoc_consts_acid.len() as f64 - i as f64)) * 
+                        match species.dissoc_consts_acid[0..i]
                             .iter()
                             .copied()
-                            .reduce(|accumulator, Kb| accumulator * Ki / Kb)
+                            .reduce(|accumulator, Ka| accumulator * Ka)
                         {
                             Some(product) => product,
                             None => 1.0
@@ -135,13 +135,13 @@ fn _compute_pH_partial(acidic_env: bool, sol: Vec<AcidBase>, Ki: f64) -> (f64, f
         }
 
         // Replace with more accurate pH_min value (smaller difference between LHS ([H+]) and RHS)
-        if (10_f64.powf(-pH_min) - rhs).abs() < most_accur_pH.1 
+        if (10_f64.powf(-pH_start) - rhs).abs() < most_accur_pH.1 
         {
-            most_accur_pH.0 = pH_min;
-            most_accur_pH.1 = 10_f64.powf(-pH_min) - rhs;
+            most_accur_pH.0 = pH_start;
+            most_accur_pH.1 = 10_f64.powf(-pH_start) - rhs;
         }
 
-        pH_min += 0.0001;
+        pH_start += 0.0001;
     }
 
     most_accur_pH

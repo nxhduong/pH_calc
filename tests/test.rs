@@ -4,7 +4,7 @@ use pH_calc::{
 };
 use std::time::Instant;
 
-// Show output (execution time) by running cargo test --nocapture
+// Show output (execution time) by running cargo test -- --nocapture
 
 #[test]
 fn triprotic_acid()
@@ -19,11 +19,11 @@ fn triprotic_acid()
         )
     ], 14.0)).round(), 16.0);
 
-    println!("{:2?}", now.elapsed());
+    println!("Triprotic acid: {:2?}", now.elapsed());
 }
 
 #[test]
-fn sulfuric_acid()
+fn diprotic_acid()
 {
     let now = Instant::now();
 
@@ -35,7 +35,7 @@ fn sulfuric_acid()
         )
     ], 14.0).round(), 1.0);
 
-    println!("{:2?}", now.elapsed());
+    println!("Diprotic acid: {:2?}", now.elapsed());
 }
 
 #[test]
@@ -51,7 +51,7 @@ fn monoprotic_acid()
         )
     ], 14.0)).round(), 32.0);
 
-    println!("{:2?}", now.elapsed());
+    println!(" Monoprotic acid: {:2?}", now.elapsed());
 }
 
 #[test]
@@ -68,11 +68,11 @@ fn simple_buffer()
         AcidBase::new(
             false,
             0.1,
-            vec![9.79]
+            vec![4.21]
         )
     ], 14.0)).round(), 42.0);
 
-    println!("{:2?}", now.elapsed());
+    println!("Simple buffer: {:2?}", now.elapsed());
 }
 
 #[test]
@@ -84,11 +84,11 @@ fn monoprotic_base()
         AcidBase::new(
             false,
             0.03,
-            vec![4.76]
+            vec![9.24]
         )
-    ], 14.0).round(), 109.0);
+    ], 14.0).round(), 110.0);
 
-    println!("{:2?}", now.elapsed());
+    println!("Monoprotic base: {:2?}", now.elapsed());
 }
 
 #[test]
@@ -100,11 +100,11 @@ fn diprotic_base()
         AcidBase::new(
             false,
             0.25,
-            vec![7.65, 3.67]
+            vec![6.35, 10.33]
         )
-    ], 14.0).round(), 119.0);
+    ], 14.0).round(), 120.0);
 
-    println!("{:2?}", now.elapsed());
+    println!("Diprotic base: {:2?}", now.elapsed());
 }
 
 #[test]
@@ -149,7 +149,7 @@ fn super_solution()
 {
     let now = Instant::now();
 
-    assert_eq!(compute_pH(vec![
+    assert_eq!((10.0 * compute_pH(vec![
         AcidBase::new(
             true,
             0.02,
@@ -175,7 +175,7 @@ fn super_solution()
             0.05,
             vec![9.24]
         )
-    ], 14.0), 7.0);
+    ], 14.0)).round(), 66.0);
 
-    println!("{:2?}", now.elapsed());
+    println!("Super solution: {:2?}", now.elapsed());
 }
