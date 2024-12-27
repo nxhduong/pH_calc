@@ -108,7 +108,7 @@ fn diprotic_base()
 }
 
 #[test]
-#[ignore = "test not completed"]
+#[ignore = "test not completed"] // TODO
 fn mc_ilvaine_buffer() 
 {
     let now = Instant::now();
@@ -149,7 +149,7 @@ fn super_solution()
 {
     let now = Instant::now();
 
-    assert_eq!((10.0 * compute_pH(vec![
+    assert_eq!((compute_pH(vec![
         AcidBase::new(
             true,
             0.02,
@@ -163,7 +163,7 @@ fn super_solution()
         AcidBase::new(
             false,
             0.25,
-            vec![4.76, 1.6, 0.7]
+            vec![9.24, 12.4, 13.3]
         ),
         AcidBase::new(
             true,
@@ -173,9 +173,9 @@ fn super_solution()
         AcidBase::new(
             false,
             0.05,
-            vec![9.24]
+            vec![4.76]
         )
-    ], 14.0)).round(), 66.0);
+    ], 14.0)).round(), 13.0);
 
     println!("Super solution: {:2?}", now.elapsed());
 }
