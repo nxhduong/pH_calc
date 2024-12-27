@@ -1,10 +1,10 @@
 # pH_calc
 A simple library crate written in Rust that can calculate the pH of a solution, given the pKa(b)s and concentrations of species in that solution.
 ## How it works
-
+(WIP)
 ## How to use
 ```rust 
-fn compute_pH(sol: Vec<AcidBase>, Ki: f64) -> f64
+fn compute_pH(sol: Vec<AcidBase>, pKi: f64) -> f64
 ```
 Where:
 - `sol`: Species in a solution
@@ -19,7 +19,7 @@ Where:
         pub fn new(is_acid: bool, conc: f64, mut pK_values: Vec<f64>) -> Self
         ```
         which takes equilibrium constants as pKa/pKb and does range check on concentration.
-- `Ki`: Self-ionization constant of solvent (`14` for water)
+- `pKi`: Self-ionization constant of solvent (`14` for water)
 
 Returns:
 - pH (set to 4 decimal places)

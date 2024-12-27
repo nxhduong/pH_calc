@@ -1,31 +1,33 @@
 #![allow(non_snake_case)] // pH_min, pKa, Kb etc.
 
+use crate::types::AcidBase;
 use std::thread;
 
-use crate::types::AcidBase;
-
-/// Compute the pH_min of a `sol`ution, with solvent self-ionization constant `Ki` (= Kw = 14 for water)
-pub fn compute_pH(sol: Vec<AcidBase>, Ki: f64) -> f64 
+/// Compute the pH_min of a `sol`ution, with solvent self-ionization constant `pKi` (= pKw = 14 for water)
+pub fn compute_pH(sol: Vec<AcidBase>, pKi: f64) -> f64 
 {
-    // Multithreading for even better performance: One thread deals with pH from 0-6.999, another deals with pH from 7-14        
+    // Multithreading for even better performance 
+    // One thread deals with pH from 0-7, another deals with pH from 7-14
+    // Of the 2 threads, the one with the more accurate pH value (smaller difference between RHS and LHS) will be returned
+
     let acid_thread = thread::spawn({
         let sol = sol.clone();
-        let Ki = Ki.clone();
+        let Ki = 10_f64.powf(-pKi);
 
         move || { _compute_pH_partial(true, sol, Ki) }
     });
-    let base_thread = thread::spawn(move || _compute_pH_partial(false, sol, Ki));
+    let base_thread = thread::spawn(move || _compute_pH_partial(false, sol, 10_f64.powf(-pKi)));
 
-    let lowest_acidic = acid_thread.join().unwrap();
-    let lowest_basic = base_thread.join().unwrap();
+    let closest_acidic_pH = acid_thread.join().unwrap();
+    let closest_basic_pH = base_thread.join().unwrap();
 
-    if lowest_acidic.1.abs() < lowest_basic.1.abs()
+    if closest_acidic_pH.1.abs() < closest_basic_pH.1.abs()
     {
-        lowest_acidic.0
+        closest_acidic_pH.0
     }
     else 
     {
-        lowest_basic.0
+        closest_basic_pH.0
     }
 }
 
@@ -34,7 +36,7 @@ fn _compute_pH_partial(acidic_env: bool, sol: Vec<AcidBase>, Ki: f64) -> (f64, f
 {
     let (mut pH_min, pH_max): (f64, f64) = if acidic_env
     {
-        (0.0, 6.9999)
+        (0.0, 7.0)
     }
     else 
     {
@@ -45,7 +47,7 @@ fn _compute_pH_partial(acidic_env: bool, sol: Vec<AcidBase>, Ki: f64) -> (f64, f
     
     while pH_min < pH_max 
     {
-        let mut rhs = 10_f64.powf(-Ki + pH_min);
+        let mut rhs = Ki / 10_f64.powf(-pH_min);
 
         for species in &sol 
         {
@@ -73,7 +75,7 @@ fn _compute_pH_partial(acidic_env: bool, sol: Vec<AcidBase>, Ki: f64) -> (f64, f
                         match species.dissoc_consts[0..i]
                             .iter()
                             .copied()
-                            .reduce(|accum, Ka| accum * Ka)
+                            .reduce(|accumulator, Ka| accumulator * Ka)
                         {
                             Some(product) => product,
                             None => 1.0
@@ -84,7 +86,7 @@ fn _compute_pH_partial(acidic_env: bool, sol: Vec<AcidBase>, Ki: f64) -> (f64, f
                         match species.dissoc_consts[0..i]
                             .iter()
                             .copied()
-                            .reduce(|accum, Ka| accum * Ka)
+                            .reduce(|accumulator, Ka| accumulator * Ka)
                         {
                             Some(product) => product,
                             None => 1.0
@@ -110,7 +112,7 @@ fn _compute_pH_partial(acidic_env: bool, sol: Vec<AcidBase>, Ki: f64) -> (f64, f
                         match species.dissoc_consts[0..(species.dissoc_consts.len() - i)]
                             .iter()
                             .copied()
-                            .reduce(|accum, Kb| accum * 10_f64.powf(-Ki) / Kb)
+                            .reduce(|accumulator, Kb| accumulator * Ki / Kb)
                         {
                             Some(product) => product,
                             None => 1.0
@@ -121,7 +123,7 @@ fn _compute_pH_partial(acidic_env: bool, sol: Vec<AcidBase>, Ki: f64) -> (f64, f
                         match species.dissoc_consts[0..i]
                             .iter()
                             .copied()
-                            .reduce(|accum, Kb| accum * 10_f64.powf(-Ki) / Kb)
+                            .reduce(|accumulator, Kb| accumulator * Ki / Kb)
                         {
                             Some(product) => product,
                             None => 1.0

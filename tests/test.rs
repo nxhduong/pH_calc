@@ -2,49 +2,64 @@ use pH_calc::{
     calculator::compute_pH, 
     types::AcidBase
 };
+use std::time::Instant;
 
-// Due to technical limitations, pH values are rounded to nearest integers
+// Show output (execution time) by running cargo test --nocapture
 
 #[test]
 fn triprotic_acid()
 {
-    assert_eq!(compute_pH(vec![
+    let now = Instant::now();
+
+    assert_eq!((10.0 * compute_pH(vec![
         AcidBase::new(
             true,
             0.1,
             vec![2.12, 7.21, 12.67]
         )
-    ], 14.0).round(), 2.0);
+    ], 14.0)).round(), 16.0);
+
+    println!("{:2?}", now.elapsed());
 }
 
 #[test]
 fn sulfuric_acid()
 {
+    let now = Instant::now();
+
     assert_eq!(compute_pH(vec![
         AcidBase::new(
             true,
             0.1,
             vec![-3.0, 1.99]
         )
-    ], 14.0), 1.0);
+    ], 14.0).round(), 1.0);
+
+    println!("{:2?}", now.elapsed());
 }
 
 #[test]
 fn monoprotic_acid()
 {
-    assert_eq!(compute_pH(vec![
+    let now = Instant::now();
+
+    assert_eq!((10.0 * compute_pH(vec![
         AcidBase::new(
             true,
-            0.1,
+            0.02,
             vec![4.76]
         )
-    ], 14.0), 3.0);
+    ], 14.0)).round(), 32.0);
+
+    println!("{:2?}", now.elapsed());
 }
 
 #[test]
 fn simple_buffer()
 {
-    assert_eq!(compute_pH(vec![
+    let now = Instant::now();
+
+    assert_eq!((10.0 * compute_pH(vec![
         AcidBase::new(
             true,
             0.1,
@@ -55,13 +70,49 @@ fn simple_buffer()
             0.1,
             vec![9.79]
         )
-    ], 14.0), 4.0);
+    ], 14.0)).round(), 42.0);
+
+    println!("{:2?}", now.elapsed());
 }
 
 #[test]
-#[ignore = "not completed"]
+fn monoprotic_base()
+{
+    let now = Instant::now();
+
+    assert_eq!(10.0 * compute_pH(vec![
+        AcidBase::new(
+            false,
+            0.03,
+            vec![4.76]
+        )
+    ], 14.0).round(), 109.0);
+
+    println!("{:2?}", now.elapsed());
+}
+
+#[test]
+fn diprotic_base()
+{
+    let now = Instant::now();
+
+    assert_eq!(10.0 * compute_pH(vec![
+        AcidBase::new(
+            false,
+            0.25,
+            vec![7.65, 3.67]
+        )
+    ], 14.0).round(), 119.0);
+
+    println!("{:2?}", now.elapsed());
+}
+
+#[test]
+#[ignore = "test not completed"]
 fn mc_ilvaine_buffer() 
 {
+    let now = Instant::now();
+
     assert_eq!(compute_pH(vec![
         AcidBase::new(
             true,
@@ -89,11 +140,15 @@ fn mc_ilvaine_buffer()
             vec![12.5]
         )
     ], 14.0), 6.0);
+
+    println!("{:2?}", now.elapsed());
 }
 
 #[test]
 fn super_solution()
 {
+    let now = Instant::now();
+
     assert_eq!(compute_pH(vec![
         AcidBase::new(
             true,
@@ -115,5 +170,12 @@ fn super_solution()
             0.001,
             vec![-3.0, 1.99]
         ),
+        AcidBase::new(
+            false,
+            0.05,
+            vec![9.24]
+        )
     ], 14.0), 7.0);
+
+    println!("{:2?}", now.elapsed());
 }

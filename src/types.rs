@@ -23,7 +23,12 @@ impl AcidBase
         }
 
         // Sort x in 10^x (not sorting 10^x)
+        // pKb values will be sorted in reverse order for easier calculation 
         pK_values.sort_by(|val1, val2| val1.partial_cmp(val2).unwrap());
+        if !is_acid
+        {
+            pK_values.reverse();
+        }
 
         AcidBase 
         { 
