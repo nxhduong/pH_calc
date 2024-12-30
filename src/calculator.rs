@@ -4,21 +4,22 @@ use crate::types::AcidBase;
 use std::thread;
 
 /// Compute the pH of a `solution`, with solvent self-ionization constant `pKi` (= pKw = 14 for water)
-/// # Panics
-/// on: Problem with threads
-pub fn compute_pH(solution: &[AcidBase], pKi: f64) -> f64 
+/// Precision is limited to maximum 5 decimal places
+pub fn compute_pH(solution: &[AcidBase], pKi: f64, precision: u8) -> f64 
 {
+    assert!(precision > 0 && precision < 5, "Precision must range from 0 to 5 d.p.");
+
     // Multithreading for even better performance 
     // One thread deals with pH from 0-7, another deals with pH from 7-14
     // Of the 2 threads, the one with the more accurate pH value (smaller difference between RHS and LHS) will be returned
 
     let acid_thread = thread::spawn({
         let sol = solution.to_owned();
-        move || compute_pH_partial(true, &sol, 10_f64.powf(-pKi))
+        move || compute_pH_partial(true, &sol, 10_f64.powf(-pKi), precision)
     });
     let base_thread = thread::spawn({
         let sol = solution.to_owned();
-        move || compute_pH_partial(false, &sol, 10_f64.powf(-pKi))
+        move || compute_pH_partial(false, &sol, 10_f64.powf(-pKi), precision)
     });
 
     // Calculate step-by-step if multithreading fails
@@ -28,7 +29,7 @@ pub fn compute_pH(solution: &[AcidBase], pKi: f64) -> f64
         Err(err) =>
         {
             eprintln!("{err:?}");
-            compute_pH_partial(true, &solution, 10_f64.powf(-pKi))
+            compute_pH_partial(true, &solution, 10_f64.powf(-pKi), precision)
         }
     };
     let closest_basic_pH = match base_thread.join()
@@ -37,7 +38,7 @@ pub fn compute_pH(solution: &[AcidBase], pKi: f64) -> f64
         Err(err) =>
         {
             eprintln!("{err:?}");
-            compute_pH_partial(false, &solution, 10_f64.powf(-pKi))
+            compute_pH_partial(false, &solution, 10_f64.powf(-pKi), precision)
         }
     };
 
@@ -52,7 +53,7 @@ pub fn compute_pH(solution: &[AcidBase], pKi: f64) -> f64
 }
 
 /// Compute pH in a specific range (acidic or basic)
-fn compute_pH_partial(acidic_env: bool, sol: &[AcidBase], Ki: f64) -> (f64, f64)
+fn compute_pH_partial(acidic_env: bool, sol: &[AcidBase], Ki: f64, dp: u8) -> (f64, f64)
 {
     let (mut pH_start, pH_end): (f64, f64) = if acidic_env
     {
@@ -149,7 +150,7 @@ fn compute_pH_partial(acidic_env: bool, sol: &[AcidBase], Ki: f64) -> (f64, f64)
             most_accur_pH.1 = 10_f64.powf(-pH_start) - rhs;
         }
 
-        pH_start += 0.0001;
+        pH_start += 10_f64.powi(-(dp as i32));
     }
 
     most_accur_pH

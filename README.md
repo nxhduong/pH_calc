@@ -4,7 +4,7 @@ A simple library crate written in Rust that can calculate the pH of a solution f
 (WIP)
 ## Usage
 ```rust 
-pub fn compute_pH(solution: &[AcidBase], pKi: f64) -> f64
+pub fn compute_pH(solution: &[AcidBase], pKi: f64, precision: u8) -> f64
 ```
 Where:
 - `solution`: Species in a solution
@@ -19,9 +19,10 @@ Where:
         pub fn new(is_acidic: bool, conc: f64, mut pKa_values: Vec<f64>) -> Self
         ```
 - `pKi`: Self-ionization constant of solvent (`14` for water)
+- `precision`: Number of decimal places desired in the final pH result (minimum 0, maximum 5, recommended 3)
 
 Returns:
-- pH (set to 4 decimal places)
+- pH
 
 Example code snippet:
 ```rust
@@ -32,8 +33,8 @@ compute_pH(&[
             0.1,
             &mut [2.12, 7.21, 12.67]
         )
-    ], 14.0)
-// Output: ~1.62
+    ], 14.0, 2)
+// Should output: ~1.62
 ```
 For amphoteric species, treat them as separate acids and bases.
 ## TODOs
