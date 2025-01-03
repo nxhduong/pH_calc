@@ -3,6 +3,7 @@ A simple library crate that can calculate the pH of a solution, given the pKa an
 A simple library crate that can calculate the pH of a solution, given the pKa and concentrations of species in that solution. It is written in Rust in order to maximize performance.
 ## How it works
 For a solution of e.g. oxalic acid in equilibrium:
+
 $$H_2C_2O_4\rightleftharpoons HC_2O_4^{-}+H^{+}(K_{a1}=[H^{+}][HC_2O_4^{-}]/[H_2C_2O_4])(I)$$
 
 $$HC_2O_4^{-}\rightleftharpoons H^{+}+C_2O_4^{2-}(K_{a2}=[H^{+}][C_2O_4^{2-}]/[HC_2O_4^{-}])\Rightarrow H_2C_2O_4\rightleftharpoons 2H^{+}+C_2O_4^{2-}(K_{a1}K_{a2})(II)$$
