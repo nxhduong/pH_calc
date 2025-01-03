@@ -56,11 +56,11 @@ $$[H^{+}]=[OH^{-}]-[NH_4^{+}]...$$
 
 The plot of 
 
-$$LHS-RHS=y=[H+]-([OH^{-}]+[HC_2O_4^{-}]+2[C_2O_4^{2-}]); x=10^{-[H^{+}]}$$ 
+$$LHS-RHS=y=[H^+]-([OH^{-}]+[HC_2O_4^{-}]+2[C_2O_4^{2-}]); x=10^{-[H^{+}]}$$ 
 
 will (be very likely to) have a shape similar to the following plot (personally, I have not found any exceptions yet):
 
-![plot](./res/img/desmos-graph-pH.png)
+![plot](./res/img/plot.svg)
 
 The red line crosses the x-axis at 1 point (which is consistent with reality, as a solution with defined concentrations of acids and bases has only 1 value of pH) where $RHS=LHS$ and $x=pH$.
 
