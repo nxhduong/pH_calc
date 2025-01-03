@@ -60,3 +60,60 @@ impl AcidBase
         &self.dissoc_consts_acid
     }
 }
+
+/// Properties of the solvent
+pub struct SolProperties
+{
+    /// Self-ionization constant of solvent (`14` for water)
+    pKi: f64,
+
+    /// Minimum possible pH value of the solution
+    min_pH: f64,
+
+    /// Maximum possible pH value of the solution
+    max_pH: f64
+}
+
+impl SolProperties
+{
+    /// Default properties of water
+    pub const fn water() -> Self
+    {
+        Self
+        {
+            pKi: 14.0,
+            min_pH: -2.0,
+            max_pH: 16.0
+        }
+    }
+
+    /// Instantiates new `SolProperties`
+    /// # Panics 
+    /// if `min_pH` is not lower than `max_pH`
+    pub fn new(pKi: f64, min_pH: f64, max_pH: f64) -> Self
+    {
+        assert!(min_pH < max_pH, "Minimum pH must be lower than maximum pH");
+
+        Self
+        {
+            pKi, // pKw
+            min_pH,
+            max_pH
+        }
+    }
+
+    pub const fn pKi(&self) -> f64
+    {
+        self.pKi
+    }
+
+    pub const fn min_pH(&self) -> f64
+    {
+        self.min_pH
+    }
+
+    pub const fn max_pH(&self) -> f64
+    {
+        self.max_pH
+    }
+}

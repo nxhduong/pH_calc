@@ -1,10 +1,41 @@
 # pH_calc
-A simple library crate written in Rust that can calculate the pH of a solution from the pKa(b)s and concentrations of species in that solution.
+A simple library crate that can calculate the pH of a solution, given the pKa and concentrations of species in that solution. It is written in Rust to maximize performance.
 ## How it works
-(WIP)
+For a solution of e.g. oxalic acid in equilibrium:
+$$H_2C_2O_4\rightleftharpoons HC_2O_4^{-}+H^{+}(K_{a1}=[H^{+}][HC_2O_4^{-}]/[H_2C_2O_4])(I)$$
+$$HC_2O_4^{-}\rightleftharpoons H^{+}+C_2O_4^{2-}(K_{a2}=[H^{+}][C_2O_4^{2-}]/[HC_2O_4^{-}])(II)$$
+$$H_2O\rightleftharpoons H^{+}+OH^{-}(K_w=[H^{+}][OH^{-}])(III)$$
+Conservation of initial concentration:
+$$C^0_{H_2C_2O_4}=[H_2C_2O_4]_{undissociated}+[HC_2O_4^{-}]+[C_2O_4^{2-}]$$
+$$\Rightarrow K_{a1}K_{a2}C^0_{H_2C_2O_4}=[H^{+}]^2[C_2O_4^{2-}]+\frac{[H^{+}]^2[HC_2O_4^{-}][C_2O_4^{2-}]}{[H_2C_2O_4]}+\frac{[H^{+}]^2[C_2O_4^{2-}]}{[H_2C_2O_4]}$$
+$$=[C_2O_4^{2-}]([H^{+}]^2+\frac{[H^{+}]^2[HC_2O_4^{-}]}{[H_2C_2O_4]}+\frac{[H^{+}]^2[C_2O_4^{2-}]}{[H_2C_2O_4]})$$
+$$=[C_2O_4^{2-}]([H^{+}]^2+[H^{+}]K_{a1}+K_{a1}K_{a2})$$
+$$\Rightarrow[C_2O_4^{2-}]=C^0_{H_2C_2O_4}\frac{K_{a1}K_{a2}}{[H^{+}]^2+[H^{+}]K_{a1}+K_{a1}K_{a2}}(IV)$$
+Similarly,
+$$[HC_2O_4^{-}]=C^0_{H_2C_2O_4}\frac{[H^{+}]K_{a1}}{[H^{+}]^2+[H^{+}]K_{a1}+K_{a1}K_{a2}}(V)$$
+and
+$$[H_2C_2O_4]=C^0_{H_2C_2O_4}\frac{[H^{+}]^2}{[H^{+}]^2+[H^{+}]K_{a1}+K_{a1}K_{a2}}(VI)$$
+Similarly, for a base such as ammonia:
+$$NH_3+H^{+}\rightleftharpoons NH_4^{+}(K_a^{-1})$$
+$$[NH_4^{+}]=C^0_{NH_3}\frac{[H^{+}]}{[H^{+}]+K_{a(NH_4^{+})}}$$
+$$[NH_3]=C^0_{NH_3}\frac{K_{a(NH_4^{+})}}{[H^{+}]+K_{a(NH_4^{+})}}$$
+or for a triprotic acid like phosphoric acid:
+$$$$
+Conservation of charge:
+$$(I)(II)(III)\Rightarrow[H^{+}]=[OH^{-}]+[HC_2O_4^{-}]+[C_2O_4^{2-}](VII)$$
+$$(IV)(V)(VI)(VII)\Rightarrow [H^{+}] \Rightarrow\bold pH$$
+(for bases e.g. ammonia):
+$$[H^{+}]=[OH^{-}]-[NH_4^{+}]...$$
+The plot of $LHS-RHS=y=[H+]-([OH^{-}]+[HC_2O_4^{-}]+[C_2O_4^{2-}]); x=10^{-[H^{+}]}$ will (be very likely to) have a shape similar to the following plot: (Personally, I have not found any exceptions yet)
+
+![plot](./res/img/desmos-graph-pH.png)
+
+The red line crosses the x-axis at 1 point (which is consistent to reality, as a solution with defined concentrations of acids and bases has only 1 value of pH) where $RHS=LHS$ and $x=pH$.
+
+This program solves for pH by first calculating $LHS-RHS$ at lower bound pH, upper bound pH (both first set to the minimum and maximum pH value that can exist in the solvent, respectively), and mean pH...(WIP)
 ## Usage
 ```rust 
-pub fn compute_pH(solution: &[AcidBase], pKi: f64, precision: u8) -> f64
+pub fn compute_pH(solution: &[AcidBase], properties: &SolProperties) -> f64 
 ```
 Where:
 - `solution`: Species in a solution
@@ -18,11 +49,19 @@ Where:
         ```rust
         pub fn new(is_acidic: bool, conc: f64, mut pKa_values: Vec<f64>) -> Self
         ```
-- `pKi`: Self-ionization constant of solvent (`14` for water)
-- `precision`: Number of decimal places desired in the final pH result (minimum 0, maximum 5, recommended 3)
+- `properties`: Properties of the solvent, consisting of:
+    - `pKi`: Self-ionization constant of the solvent (which is `14` for water)
+    - `min_pH` and `max_pH` are the minimum and maximum possible pH values that can exist in that solvent, respectively
+
+    If the solvent is water, there is a shorthand constructor `SolProperties::water()`, with `pKi` set to `14`, `min_pH` set to `-2.0`, and `max_pH` set to `16.0`
+    
+    Otherwise, you can always use 
+    ```rust
+    SolProperties::new(pKi: f64, min_pH: f64, max_pH: f64)
+    ```
 
 Returns:
-- pH
+- The pH value of the solution
 
 Example code snippet:
 ```rust
@@ -33,17 +72,19 @@ compute_pH(&[
             0.1,
             &mut [2.12, 7.21, 12.67]
         )
-    ], 14.0, 2)
+    ], &SolProperties::water())
 // Should output: ~1.62
 ```
 For amphoteric species, treat them as separate acids and bases.
-## TODOs
-- Include activity of ions and volume in calculation
-- Include automatic detection of amphoteric species.
-## Contribution
-All contributions are welcomed.
+## To-Do's
+- Include activity of ions and volume in calculations
+- Include automatic detection of amphoteric species
+- Python bindings so that this library can be used in Python
+- GUI app.
 ## License
 Please see `LICENSE` for more information.
+## Contributing to this project
+All contributions are welcomed.
 ## Contact
 - My GitHub: [github.com/nxhduong](https://github.com/nxhduong)
 - My email: duong70g@gmail.com.

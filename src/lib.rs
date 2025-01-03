@@ -8,6 +8,5 @@
     clippy::cargo,
 )]
 
-
 pub mod calculator;
 pub mod types;
