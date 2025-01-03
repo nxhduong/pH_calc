@@ -1,5 +1,6 @@
 # pH_calc
 A simple library crate that can calculate the pH of a solution, given the pKa and concentrations of species in that solution. It is written in Rust in order to maximize performance.
+A simple library crate that can calculate the pH of a solution, given the pKa and concentrations of species in that solution. It is written in Rust in order to maximize performance.
 ## How it works
 For a solution of e.g. oxalic acid in equilibrium:
 $$H_2C_2O_4\rightleftharpoons HC_2O_4^{-}+H^{+}(K_{a1}=[H^{+}][HC_2O_4^{-}]/[H_2C_2O_4])(I)$$
@@ -63,7 +64,11 @@ will (be very likely to) have a shape similar to the following plot (personally,
 The red line crosses the x-axis at 1 point (which is consistent with reality, as a solution with defined concentrations of acids and bases has only 1 value of pH) where $RHS=LHS$ and $x=pH$.
 
 This program solves for pH by first calculating $LHS-RHS$ at the lower and upper bound pH (both are first set to the minimum and maximum pH value that can exist in the solvent, respectively), and the mean pH (which is the mean of the lower and upper bound pH values).
+The red line crosses the x-axis at 1 point (which is consistent with reality, as a solution with defined concentrations of acids and bases has only 1 value of pH) where $RHS=LHS$ and $x=pH$.
 
+This program solves for pH by first calculating $LHS-RHS$ at the lower and upper bound pH (both are first set to the minimum and maximum pH value that can exist in the solvent, respectively), and the mean pH (which is the mean of the lower and upper bound pH values).
+
+If the mean pH has the same sign as the lower bound pH, the lower bound pH value is set to the mean pH, while the new mean is calculated from the new lower bound and upper bound values, and vice versa. This process repeats 1000 times, and the output is the final mean pH, which is very close to the actual pH of the solution.
 If the mean pH has the same sign as the lower bound pH, the lower bound pH value is set to the mean pH, while the new mean is calculated from the new lower bound and upper bound values, and vice versa. This process repeats 1000 times, and the output is the final mean pH, which is very close to the actual pH of the solution.
 ## Usage
 ```rust 
@@ -78,6 +83,7 @@ Where:
         dissoc_consts_acid: Vec<f64> // Ka of the acid/conjugate acid of the base
         ```
         To instantiate new acids and bases, use the constructor:
+        To instantiate new acids and bases, use the constructor:
         ```rust
         pub fn new(is_acidic: bool, conc: f64, mut pKa_values: Vec<f64>) -> Self
         ```
@@ -85,6 +91,7 @@ Where:
     - `pKi`: Self-ionization constant of the solvent (which is `14` for water)
     - `min_pH` and `max_pH` are the minimum and maximum possible pH values that can exist in that solvent, respectively
 
+    In case the solvent is water, there is a shorthand constructor `SolProperties::water()`, with `pKi` set to `14`, `min_pH` set to `-2.0`, and `max_pH` set to `16.0`
     In case the solvent is water, there is a shorthand constructor `SolProperties::water()`, with `pKi` set to `14`, `min_pH` set to `-2.0`, and `max_pH` set to `16.0`
     
     Otherwise, you can always use 
@@ -110,12 +117,14 @@ compute_pH(&[
 For amphoteric species, treat them as separate acids and bases.
 ## To-Do's
 - Include the activity of ions and volume in calculations
+- Include the activity of ions and volume in calculations
 - Include automatic detection of amphoteric species
 - Python bindings so that this library can be used in Python
 - GUI app.
 ## License
 Please see `LICENSE` for more information.
 ## Contributing to this project
+All contributions are welcomed. Please let me know if you would like to point out any mistakes.
 All contributions are welcomed. Please let me know if you would like to point out any mistakes.
 ## Contact
 - My GitHub: [github.com/nxhduong](https://github.com/nxhduong)
