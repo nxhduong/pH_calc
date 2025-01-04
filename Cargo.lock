@@ -148,6 +148,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "cursive_table_view"
+version = "0.15.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "86a6cca21da26bb588502349d09b68574a3e55689ddeaeeb086af373e0ef6766"
+dependencies = [
+ "cursive_core",
+]
+
+[[package]]
 name = "darling"
 version = "0.20.10"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -430,10 +439,19 @@ name = "pH_calc"
 version = "0.1.0"
 
 [[package]]
+name = "pH_calc-py"
+version = "0.1.0"
+dependencies = [
+ "pyo3",
+]
+
+[[package]]
 name = "pH_calc-ui"
 version = "0.1.0"
 dependencies = [
  "cursive",
+ "cursive_table_view",
+ "pH_calc",
 ]
 
 [[package]]
@@ -457,13 +475,6 @@ dependencies = [
  "redox_syscall",
  "smallvec",
  "windows-targets",
-]
-
-[[package]]
-name = "ph_calc-py"
-version = "0.1.0"
-dependencies = [
- "pyo3",
 ]
 
 [[package]]

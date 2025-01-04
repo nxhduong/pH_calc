@@ -1,12 +1,12 @@
 #![allow(non_snake_case, reason = "pH_min, pKa etc.")]
 
-/// Represents an acid or base in a solution
-#[derive(Clone)]
-pub struct AcidBase<'a>
-{
-    /// Name of the species. Only matters for the GUI
-    pub name: &'a str,
+use pyo3::pyclass;
 
+/// Represents an acid or base in a solution
+#[pyclass]
+#[derive(Clone)]
+pub struct AcidBase
+{
     /// `is_acid` is true if the species is an acid, false if it is a base
     is_acid: bool,
 
@@ -17,7 +17,7 @@ pub struct AcidBase<'a>
     dissoc_consts_acid: Vec<f64>
 }
 
-impl<'a> AcidBase<'a>
+impl AcidBase
 {
     /// Recommended way of instantiating new acids/bases
     /// - `is_acidic` is true if the species is an acid, false if it is a base
@@ -39,7 +39,6 @@ impl<'a> AcidBase<'a>
 
         Self 
         {
-            name: "", 
             is_acid: is_acidic, 
             conc, 
             dissoc_consts_acid: pKa_values
@@ -66,6 +65,8 @@ impl<'a> AcidBase<'a>
 }
 
 /// Properties of the solvent
+#[pyclass]
+#[derive(Clone)]
 pub struct SolProperties
 {
     /// Self-ionization constant of solvent (`14` for water)

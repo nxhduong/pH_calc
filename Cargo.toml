@@ -4,3 +4,4 @@ members = [
     "ph_calc-py",
     "ph_calc-ui"
 ]
+resolver = "2"

@@ -1,5 +1,5 @@
 [package]
-name = "ph_calc-py"
+name = "pH_calc-py"
 version = "0.1.0"
 authors = ["nxhduong"]
 edition = "2021"
@@ -11,7 +11,7 @@ categories = ["chemistry", "scientific", "calculator"]
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 [lib]
-name = "ph_calc_py"
+name = "pH_calc"
 crate-type = ["cdylib"]
 
 [dependencies]

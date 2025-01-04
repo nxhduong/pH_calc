@@ -1,14 +1,28 @@
-use pyo3::prelude::*;
+#![allow(non_snake_case, reason = "pH_min, pKa etc.")]
 
-/// Formats the sum of two numbers as string.
+pub mod calculator;
+pub mod types;
+
+use pyo3::{
+    *,
+    types::{
+        PyModule,
+        PyModuleMethods
+    }
+};
+use calculator::compute_pH;
+use types::*;
+
+/// Compute the pH of a `solution`, with solvent `properties`
 #[pyfunction]
-fn sum_as_string(a: usize, b: usize) -> PyResult<String> {
-    Ok((a + b).to_string())
+pub fn calculate_pH(solution: Vec<AcidBase>, properties: SolProperties) -> f64 
+{
+    compute_pH(solution.as_slice(), &properties)
 }
 
-/// A Python module implemented in Rust.
+/// Python module
 #[pymodule]
-fn ph_calc_py(m: &Bound<'_, PyModule>) -> PyResult<()> {
-    m.add_function(wrap_pyfunction!(sum_as_string, m)?)?;
+fn pH_calc(py_mod: &Bound<'_, PyModule>) -> PyResult<()> {
+    py_mod.add_function(wrap_pyfunction!(calculate_pH, py_mod)?)?;
     Ok(())
 }

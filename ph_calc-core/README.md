@@ -1,5 +1,7 @@
 # pH_calc-core
 A simple library crate that can calculate the pH of a solution, given the pKa and concentrations of species in that solution.
+
+This library can also be called from Python with Python bindings available at [pH_calc-py](../pH_calc-py/).
 ## How it works
 For a solution of e.g. oxalic acid in equilibrium:
 
