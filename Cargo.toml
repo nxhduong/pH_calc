@@ -1,19 +1,6 @@
-[package]
-name = "pH_calc"
-version = "0.1.0"
-authors = ["nxhduong"]
-edition = "2021"
-description = "A simple pH calculator"
-repository = "github.com/nxhduong/ph_calc"
-license = "MIT"
-keywords = ["ph", "chemistry", "science", "scientific"]
-categories = ["chemistry", "scientific", "calculator"]
-
-[dependencies]
-
-[profile.release]
-opt-level = 3
-debug = "full"
-lto = "fat"
-panic = "unwind"
-codegen-units = 1
+[workspace]
+members = [
+    "ph_calc-core",
+    "ph_calc-py",
+    "ph_calc-ui"
+]

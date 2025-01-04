@@ -1,0 +1,18 @@
+[package]
+name = "ph_calc-py"
+version = "0.1.0"
+authors = ["nxhduong"]
+edition = "2021"
+description = "Python bindings for ph_calc-core"
+repository = "github.com/nxhduong/ph_calc"
+license = "MIT"
+keywords = ["ph", "chemistry", "science", "scientific"]
+categories = ["chemistry", "scientific", "calculator"]
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+[lib]
+name = "ph_calc_py"
+crate-type = ["cdylib"]
+
+[dependencies]
+pyo3 = "0.23.3"

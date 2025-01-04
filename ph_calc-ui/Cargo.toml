@@ -1,0 +1,13 @@
+[package]
+name = "pH_calc-ui"
+version = "0.1.0"
+authors = ["nxhduong"]
+edition = "2021"
+description = "TUI for ph_calc-core"
+repository = "github.com/nxhduong/ph_calc"
+license = "MIT"
+keywords = ["ph", "chemistry", "science", "scientific"]
+categories = ["chemistry", "scientific", "calculator"]
+
+[dependencies]
+cursive = "0.21.1"

@@ -15,7 +15,7 @@ fn water()
 {
     let now = Instant::now();
 
-    assert_eq!(compute_pH(&[], &SolProperties::water()), 7.0);
+    assert_eq!(compute_pH(&[], &SolProperties::default_water()), 7.0);
 
     println!("Water: {:2?}", now.elapsed());
 }
@@ -29,7 +29,7 @@ fn strong_acid()
         true,
         18.0,
         &mut [-3.0, 1.99]
-    )], &SolProperties::water())).round(), -125.0);
+    )], &SolProperties::default_water())).round(), -125.0);
 
     println!("Strong acid: {:2?}", now.elapsed());
 }
@@ -43,7 +43,7 @@ fn strong_base()
         false,
         84.0,
         &mut [13.5]
-    )], &SolProperties::water())).round(), 147.0);
+    )], &SolProperties::default_water())).round(), 147.0);
 
     println!("Strong base: {:2?}", now.elapsed());
 }
@@ -59,7 +59,7 @@ fn triprotic_acid()
             0.1,
             &mut [2.12, 7.21, 12.67]
         )
-    ], &SolProperties::water())).round(), 16.0);
+    ], &SolProperties::default_water())).round(), 16.0);
 
     println!("Triprotic acid: {:2?}", now.elapsed());
 }
@@ -75,7 +75,7 @@ fn diprotic_acid()
             0.1,
             &mut [-3.0, 1.99]
         )
-    ], &SolProperties::water()).round(), 1.0);
+    ], &SolProperties::default_water()).round(), 1.0);
 
     println!("Diprotic acid: {:2?}", now.elapsed());
 }
@@ -91,7 +91,7 @@ fn monoprotic_acid()
             0.02,
             &mut [4.76]
         )
-    ], &SolProperties::water())).round(), 32.0);
+    ], &SolProperties::default_water())).round(), 32.0);
 
     println!(" Monoprotic acid: {:2?}", now.elapsed());
 }
@@ -112,7 +112,7 @@ fn simple_buffer()
             0.1,
             &mut [4.21]
         )
-    ], &SolProperties::water())).round(), 42.0);
+    ], &SolProperties::default_water())).round(), 42.0);
 
     println!("Simple buffer: {:2?}", now.elapsed());
 }
@@ -128,7 +128,7 @@ fn monoprotic_base()
             0.03,
             &mut [9.24]
         )
-    ], &SolProperties::water()).round(), 110.0);
+    ], &SolProperties::default_water()).round(), 110.0);
 
     println!("Monoprotic base: {:2?}", now.elapsed());
 }
@@ -144,7 +144,7 @@ fn diprotic_base()
             0.25,
             &mut [6.35, 10.33]
         )
-    ], &SolProperties::water()).round(), 120.0);
+    ], &SolProperties::default_water()).round(), 120.0);
 
     println!("Diprotic base: {:2?}", now.elapsed());
 }
@@ -204,7 +204,7 @@ fn mc_ilvaine_buffer()
                 0.1 * (vol_citric) / (vol_citric + vol_phosphate),
                 &mut [3.13, 4.76, 6.39, 14.4]
             ),
-        ], &SolProperties::water())).round(), res);
+        ], &SolProperties::default_water())).round(), res);
     }
 
     println!("{:2?}", now.elapsed());
@@ -241,7 +241,7 @@ fn super_solution()
             0.05,
             &mut [4.76]
         )
-    ], &SolProperties::water()).round(), 13.0);
+    ], &SolProperties::default_water()).round(), 13.0);
 
     println!("Super solution: {:2?}", now.elapsed());
 }

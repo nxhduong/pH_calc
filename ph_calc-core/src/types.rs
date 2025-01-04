@@ -77,7 +77,7 @@ pub struct SolProperties
 impl SolProperties
 {
     /// Default properties of water
-    pub const fn water() -> Self
+    pub const fn default_water() -> Self
     {
         Self
         {
