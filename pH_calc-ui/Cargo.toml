@@ -3,13 +3,13 @@ name = "pH_calc-ui"
 version = "0.1.0"
 authors = ["nxhduong"]
 edition = "2021"
-description = "TUI for ph_calc-core"
+description = "TUI for pH_calc-core"
 repository = "github.com/nxhduong/ph_calc"
 license = "MIT"
-keywords = ["ph", "chemistry", "science", "scientific"]
+keywords = ["pH", "chemistry", "science", "scientific"]
 categories = ["chemistry", "scientific", "calculator"]
 
 [dependencies]
 cursive = "0.21.1"
 cursive_table_view = "0.15.0"
-pH_calc_core = { path = "../pH_calc-core" }
+pH_calc-core = { path = "../pH_calc-core" }
