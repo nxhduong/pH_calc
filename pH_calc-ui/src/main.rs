@@ -30,11 +30,11 @@ enum SpeciesColumn
     Consts
 }
 
-impl TableViewItem<SpeciesColumn> for AcidBase<'_> {
+impl TableViewItem<SpeciesColumn> for AcidBase {
 
     fn to_column(&self, column: SpeciesColumn) -> String {
         match column {
-            SpeciesColumn::Name => self.name.to_string(),
+            SpeciesColumn::Name => self.name.clone().unwrap_or("Unnamed".to_string()),
             SpeciesColumn::Type => String::from(if self.is_acidic() { "Acid" } else { "Base" }),
             SpeciesColumn::Conc => format!("{}", self.conc()),
             SpeciesColumn::Consts => format!("{:?}", self.dissoc_consts_acid())
@@ -51,7 +51,6 @@ impl TableViewItem<SpeciesColumn> for AcidBase<'_> {
         }*/
         std::cmp::Ordering::Equal
     }
-
 }
 
 fn main()

@@ -25,7 +25,7 @@ fn strong_acid()
 {
     let now = Instant::now();
 
-    assert_eq!((100.0 * compute_pH(&[AcidBase::new(
+    assert_eq!((100.0 * compute_pH(&[AcidBase::new(None, 
         true,
         18.0,
         &mut [-3.0, 1.99]
@@ -40,6 +40,7 @@ fn strong_base()
     let now = Instant::now();
 
     assert_eq!((10.0 * compute_pH(&[AcidBase::new(
+        None, 
         false,
         84.0,
         &mut [13.5]
@@ -54,7 +55,7 @@ fn triprotic_acid()
     let now = Instant::now();
 
     assert_eq!((10.0 * compute_pH(&[
-        AcidBase::new(
+        AcidBase::new(None, 
             true,
             0.1,
             &mut [2.12, 7.21, 12.67]
@@ -70,7 +71,7 @@ fn diprotic_acid()
     let now = Instant::now();
 
     assert_eq!(compute_pH(&[
-        AcidBase::new(
+        AcidBase::new(None, 
             true,
             0.1,
             &mut [-3.0, 1.99]
@@ -86,7 +87,7 @@ fn monoprotic_acid()
     let now = Instant::now();
 
     assert_eq!((10.0 * compute_pH(&[
-        AcidBase::new(
+        AcidBase::new(None, 
             true,
             0.02,
             &mut [4.76]
@@ -102,12 +103,12 @@ fn simple_buffer()
     let now = Instant::now();
 
     assert_eq!((10.0 * compute_pH(&[
-        AcidBase::new(
+        AcidBase::new(None, 
             true,
             0.1,
             &mut [4.21]
         ),
-        AcidBase::new(
+        AcidBase::new(None, 
             false,
             0.1,
             &mut [4.21]
@@ -123,7 +124,7 @@ fn monoprotic_base()
     let now = Instant::now();
 
     assert_eq!(10.0 * compute_pH(&[
-        AcidBase::new(
+        AcidBase::new(None, 
             false,
             0.03,
             &mut [9.24]
@@ -139,7 +140,7 @@ fn diprotic_base()
     let now = Instant::now();
 
     assert_eq!(10.0 * compute_pH(&[
-        AcidBase::new(
+        AcidBase::new(None, 
             false,
             0.25,
             &mut [6.35, 10.33]
@@ -189,17 +190,17 @@ fn mc_ilvaine_buffer()
     for (res, vol_phosphate, vol_citric) in mixing_table
     {
         assert_eq!((10.0 * compute_pH(&[
-            AcidBase::new(
+            AcidBase::new(None, 
                 true,
                 0.2 * (vol_phosphate) / (vol_citric + vol_phosphate),
                 &mut [12.67]
             ),
-            AcidBase::new(
+            AcidBase::new(None, 
                 false,
                 0.2 * (vol_phosphate) / (vol_citric + vol_phosphate),
                 &mut [11.88, 6.79]
             ),
-            AcidBase::new(
+            AcidBase::new(None, 
                 true,
                 0.1 * (vol_citric) / (vol_citric + vol_phosphate),
                 &mut [3.13, 4.76, 6.39, 14.4]
@@ -216,27 +217,27 @@ fn super_solution()
     let now = Instant::now();
 
     assert_eq!(compute_pH(&[
-        AcidBase::new(
+        AcidBase::new(None, 
             true,
             0.02,
             &mut [2.12, 7.21, 12.67]
         ),
-        AcidBase::new(
+        AcidBase::new(None, 
             true,
             0.01,
             &mut [2.0, 2.7, 6.16, 10.26]
         ),
-        AcidBase::new(
+        AcidBase::new(None, 
             false,
             0.25,
             &mut [9.24, 12.4, 13.3]
         ),
-        AcidBase::new(
+        AcidBase::new(None, 
             true,
             0.001,
             &mut [-3.0, 1.99]
         ),
-        AcidBase::new(
+        AcidBase::new(None, 
             false,
             0.05,
             &mut [4.76]
