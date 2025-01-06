@@ -16,7 +16,7 @@ use cursive_table_view::{
     TableView,
     TableViewItem
 };
-use pH_calc_core::{
+use pH_calc::{
     types::AcidBase,
     calculator::compute_pH
 };

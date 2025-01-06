@@ -12,7 +12,7 @@ pub fn compute_pH(solution: &[AcidBase], properties: &SolProperties) -> f64
     let mut upper_bound_pH: f64 = properties.max_pH();
     let mut mean_pH: f64 = (lower_bound_pH + upper_bound_pH) / 2.0;
 
-    for _ in 0..1000
+    for _ in 0..1_000
     {
         let left_value = calculate_diff(solution, 10_f64.powf(-properties.pKi()), lower_bound_pH);
         let right_value = calculate_diff(solution, 10_f64.powf(-properties.pKi()), upper_bound_pH);
@@ -36,11 +36,11 @@ pub fn compute_pH(solution: &[AcidBase], properties: &SolProperties) -> f64
         }
         else if center_value * right_value >= 0.0
         {
-            upper_bound_pH = mean_pH
+            upper_bound_pH = mean_pH;
         }
         else 
         {
-            panic!("Calculation error with lower_bound_pH = {}, upper_bound_pH = {}", lower_bound_pH, upper_bound_pH);
+            panic!("Calculation error with lower_bound_pH = {lower_bound_pH}, upper_bound_pH = {upper_bound_pH}");
         }
 
         mean_pH = (lower_bound_pH + upper_bound_pH) / 2.0;

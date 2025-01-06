@@ -1,4 +1,4 @@
-use pH_calc_core::{
+use pH_calc::{
     calculator::compute_pH, 
     types::{
         AcidBase,

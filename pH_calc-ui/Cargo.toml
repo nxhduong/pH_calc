@@ -12,4 +12,4 @@ categories = ["chemistry", "scientific", "calculator"]
 [dependencies]
 cursive = "0.21.1"
 cursive_table_view = "0.15.0"
-pH_calc-core = { path = "../pH_calc-core" }
+pH_calc = { path = "../pH_calc" }

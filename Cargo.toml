@@ -1,6 +1,6 @@
 [workspace]
 members = [
-    "pH_calc-core",
+    "pH_calc",
     "pH_calc-ui"
 ]
 resolver = "2"

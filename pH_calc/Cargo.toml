@@ -1,5 +1,5 @@
 [package]
-name = "pH_calc-core"
+name = "pH_calc"
 version = "0.1.0"
 authors = ["nxhduong"]
 edition = "2021"
@@ -11,7 +11,7 @@ categories = ["chemistry", "scientific", "calculator"]
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 [lib]
-name = "pH_calc_core"
+name = "pH_calc"
 crate-type = ["lib", "rlib", "cdylib"]
 
 [dependencies]
